@@ -1,11 +1,11 @@
 '''
 Created on 11/05/2015
+Updated on 29/04/2018
 
 	-	enjambreParticulas.py
 	
 	Dependencias: 1. pygame
-				  2. PIL
-				  3. numpy
+				  2. numpy (indirectamente)
 
 @author: Juan Pablo Moreno Rico - 20111020059
 '''
@@ -15,15 +15,14 @@ from random import randint, seed, random as rnd
 from math import sin, cos, atan2, radians, degrees
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_ESCAPE
-from PIL import Image 
-import numpy as np
+from pygame import surfarray 
 
 DIRECTORIO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VENTANA = (800,800)
 
 def cargarImagen(path_):
 	try:
-		image_ = pygame.image.load(path_).convert_alpha()
+		image_ = pygame.image.load(path_)#.convert_alpha()
 	except pygame.error:
 		print("No se encuentra la imagen " + path_)
 		pygame.quit()
@@ -47,10 +46,7 @@ class EspacioSoluciones(object):
 	"""
 	def __init__(self, img):
 		self.image = cargarImagen(img)
-		self._imagen = Image.open(img).convert('L')
-		self._espacio = np.array(list(self._imagen.getdata()))
-		self._espacio.shape = self._imagen.size
-		self._espacio = np.transpose(self._espacio)
+		self._espacio = surfarray.array2d(self.image) 
 		
 	def update(self, ventana):
 		ventana.blit(self.image, (0,0))
@@ -115,7 +111,7 @@ class Particula(pygame.sprite.Sprite):
 		ventana.blit(self.image, self.rect)
 		
 	def forma(self, espacio):
-		return espacio[(self.x, self.y)]
+		return espacio[(int(self.x), int(self.y))]
 	
 	def angDosPuntos(self, x_1, y_1, x_2, y_2):
 		y = y_2 - y_1
